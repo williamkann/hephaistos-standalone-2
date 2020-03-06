@@ -4,10 +4,10 @@
       <v-row>
         <v-col cols="12" md="4">
           <v-text-field
-            v-model="username"
-            :rules="usernameRules"
+            v-model="email"
+            :rules="emailRules"
             :counter="20"
-            label="Username"
+            label="Email"
             required
           ></v-text-field>
         </v-col>
@@ -23,7 +23,7 @@
         </v-col>
       </v-row>
       <div class="my-2">
-        <v-btn text large color="primary" @click="login(username, password)">Sign in !</v-btn>
+        <v-btn text large color="primary" @click="signIn">Sign in !</v-btn>
       </div>
       {{ isAuthenticated }}
     </v-container>
@@ -34,14 +34,13 @@
 import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
-
   data: () => ({
     valid: '',
-    username: '',
+    email: '',
     password: '',
-    usernameRules: [
-      v => !!v || 'Username is required',
-      v => v.length <= 20 || 'Name must be less than 20 characters'],
+    emailRules: [
+      v => !!v || 'Email is required',
+      v => v.length <= 20 || 'Email must be less than 20 characters'],
     passwordRules: [
       v => !!v || 'Password is required',
       v => v.length <= 20 || 'Password must be less than 20 characters']
@@ -54,7 +53,15 @@ export default {
   },
 
   methods: {
-    ...mapActions('user', ['login'])
+    ...mapActions('user', ['login']),
+    signIn () {
+      var email = this.email
+      var password = this.password
+      this.login({ email, password })
+      if (this.isAuthenticated) {
+        this.$router.push({ name: 'modules' })
+      }
+    }
   }
 }
 </script>

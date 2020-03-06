@@ -1,40 +1,72 @@
 <template>
   <v-container>
-    <v-card class="mx-auto" max-width="344" outlined>
-        <v-list-item three-line>
-            <v-list-item-content>
-                <div class="overline mb-4">OVERLINE</div>
-                <v-list-item-title class="headline mb-1">Headline 5</v-list-item-title>
-                <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle>
-            </v-list-item-content>
-
-            <v-list-item-avatar
-                tile
-                size="80"
-                color="grey"
-            ></v-list-item-avatar>
-        </v-list-item>
-        {{ isAuthenticated }}
-        <v-card-actions>
-            <v-btn text @click="logout">Button</v-btn>
-            <v-btn text>Button</v-btn>
-        </v-card-actions>
-    </v-card>
+    <v-row>
+      <v-col cols="12" sm="2" md="10">
+          <h1>Liste de vos modules</h1>
+      </v-col>
+      <v-col cols="12" sm="2" md="2">
+        <v-btn text @click="signOut">Logout</v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" sm="2" md="12">
+        <div v-for="module in this.modules" :key="module.id">
+          <v-row>
+            <v-col cols="12" sm="2" md="3">
+              <h2>{{ module.name }}</h2>
+            </v-col>
+            <v-col cols="12" sm="2" md="2">
+              <div class="my-1">
+                <router-link :to="'module/' + module.id"> Consulter ce module {{ module.id }} </router-link>
+              </div>
+              </v-col>
+          </v-row>
+          <Sessions :moduleId="module.id"/>
+        </div>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
+import { mapGetters, mapState, mapActions } from 'vuex'
+import Sessions from './Sessions.vue'
 export default {
 
   name: 'modules',
-
+  components: {
+    Sessions
+  },
   data: () => ({
-
   }),
+
   computed: {
-    ...mapGetters('user', ['isAuthenticated'])
+    ...mapState('modules', ['modules']),
+    ...mapState('sessions', ['sessions']),
+    ...mapState('exercises', ['exercises']),
+    ...mapGetters('user', ['isAuthenticated']),
+    ...mapGetters('sessions', ['getSessionsByModuleId']),
+    ...mapGetters('exercises', ['getExercisesBySessionId'])
+  },
+  async mounted () {
+    await this.fetchModules().then(() => { console.log('Fetched Modules') })
+  },
+  methods: {
+    ...mapActions('user', ['logout']),
+    ...mapActions('modules', ['fetchModules']),
+    ...mapActions('sessions', ['fetchSessionsForModule']),
+    ...mapActions('exercises', ['fetchExercisesForSession']),
+
+    signOut () {
+      this.logout()
+      if (this.isAuthenticated === false) {
+        this.$router.push({ name: 'login' })
+      }
+    },
+    consult (moduleId) {
+      console.log('ID is ' + moduleId)
+      this.$router.push({ name: 'module', params: { id: moduleId } })
+    }
   }
 }
 </script>
