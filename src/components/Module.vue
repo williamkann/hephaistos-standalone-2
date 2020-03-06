@@ -5,7 +5,7 @@
     </v-row>
     <v-row>
       <div v-for="session in this.sessions" :key="session.id">
-        <h2>{{ session.name }}</h2>
+        <router-link :to="'/session/' + session.id + '/exercises'"><h2>{{ session.name }}</h2></router-link>
         <div v-for="exercise in exercises" :key="exercise.id">
           <div v-if="session.id == exercise.sessionId">
               {{ exercise.title }}
@@ -38,16 +38,16 @@ export default {
   },
   async mounted () {
     // We have to get the module that we clicked !!
-    await this.fetchModule({ id: this.$route.params.id }).then(console.log('Fetched the module ' + this.$route.params.id))
+    await this.fetchModule({ id: this.$route.params.moduleId }).then(console.log('Fetched the module ' + this.$route.params.moduleId))
 
     // We have to pass the id of the module that we clicked to fetch the sessions
     await Promise.all(
       this.modules.map(m => { this.fetchSessionsForModule({ moduleId: m.id }); console.log(m.id) })
-    ).then(console.log('Fetched the sessions of ' + this.$route.params.id))
+    ).then(console.log('Fetched the sessions of ' + this.$route.params.moduleId))
 
     await Promise.all(
       this.sessions.map(s => { this.fetchExercisesForSession({ sessionId: s.id }); console.log(s.id) })
-    ).then(console.log('Fetched the exercises of ' + this.$route.params.id))
+    ).then(console.log('Fetched the exercises of ' + this.$route.params.moduleId))
   },
 
   methods: {

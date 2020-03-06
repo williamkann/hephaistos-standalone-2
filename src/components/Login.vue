@@ -1,33 +1,44 @@
 <template>
-  <v-form v-model="valid">
-    <v-container>
-      <v-row>
-        <v-col cols="12" md="4">
-          <v-text-field
-            v-model="email"
-            :rules="emailRules"
-            :counter="20"
-            label="Email"
-            required
-          ></v-text-field>
-        </v-col>
+  <v-card
+    class="mx-auto"
+    max-width="500"
+    outlined
+  >
+    <v-form v-model="valid">
+      <v-container>
+        <v-row>
+          <v-col cols="12" md="12">
+            <v-text-field
+              v-model="email"
+              :rules="emailRules"
+              :counter="20"
+              label="Email"
+              required
+            ></v-text-field>
+          </v-col>
 
-        <v-col cols="12" md="4">
-          <v-text-field
-            v-model="password"
-            :rules="passwordRules"
-            :counter="20"
-            label="Password"
-            required
-          ></v-text-field>
-        </v-col>
-      </v-row>
-      <div class="my-2">
-        <v-btn text large color="primary" @click="signIn">Sign in !</v-btn>
-      </div>
-      {{ isAuthenticated }}
-    </v-container>
-  </v-form>
+          <v-col cols="12" md="12">
+            <v-text-field
+              v-model="password"
+              :rules="passwordRules"
+              :counter="20"
+              label="Password"
+              required
+            ></v-text-field>
+          </v-col>
+        </v-row>
+        <div v-if="!isAuthenticated">
+          <v-row>
+            <p>BOu</p>
+          </v-row>
+        </div>
+        <div class="text-md-center">
+          <v-btn text large color="primary" @click="signIn">Sign in !</v-btn>
+        </div>
+        {{ this.isAuthenticated }}
+      </v-container>
+    </v-form>
+  </v-card>
 </template>
 
 <script>
@@ -60,6 +71,7 @@ export default {
       this.login({ email, password })
       if (this.isAuthenticated) {
         this.$router.push({ name: 'modules' })
+      } else {
       }
     }
   }

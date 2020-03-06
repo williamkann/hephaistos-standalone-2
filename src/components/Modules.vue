@@ -62,10 +62,6 @@ export default {
       if (this.isAuthenticated === false) {
         this.$router.push({ name: 'login' })
       }
-    },
-    consult (moduleId) {
-      console.log('ID is ' + moduleId)
-      this.$router.push({ name: 'module', params: { id: moduleId } })
     }
   }
 }
