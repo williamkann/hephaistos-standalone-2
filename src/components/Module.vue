@@ -1,16 +1,15 @@
 <template>
   <v-container>
     <v-row>
-      <h1>{{ this.modules }} </h1>
+      <h1>{{ this.modules }}</h1>
     </v-row>
     <v-row>
       <div v-for="session in this.sessions" :key="session.id">
         <router-link :to="'/session/' + session.id + '/exercises'"><h2>{{ session.name }}</h2></router-link>
         <div v-for="exercise in exercises" :key="exercise.id">
-          {{ exercise.sessionId }}
           <div v-if="session.id == exercise.sessionId ">
             <v-row>
-              {{ this.exercises }}
+              {{ exercise.title }}
             </v-row>
           </div>
         </div>
@@ -37,17 +36,17 @@ export default {
   },
   async mounted () {
     // Fetch the module with our Id
-    this.fetchModule({ id: this.$route.params.moduleId }).then(console.log(this.modules))
+    this.fetchModule({ id: this.$route.params.moduleId })
 
     // Fetch the sessions of the module (TP1, TP2, TP3, TP4, TP5)
-    // await Promise.all(
-    //   this.modules.map(m => { this.fetchSessionsForModule({ moduleId: m.id }); console.log(m) })
-    // ).then(console.log('Fetched all sessions of the module'))
+    await Promise.all(
+      this.modules.map(m => { this.fetchSessionsForModule({ moduleId: m.id }); console.log(m) })
+    ).then(console.log('Fetched all sessions of the module'))
 
-    // // Fetch the exercises of each session
-    // await Promise.all(
-    //   this.sessions.map(s => { this.fetchExercisesForSession({ sessionId: s.id }); console.log(s) })
-    // ).then(console.log('Fetched all exercises of each session'))
+    // Fetch the exercises of each session
+    await Promise.all(
+      this.sessions.map(s => { this.fetchExercisesForSession({ sessionId: s.id }); console.log(s) })
+    ).then(console.log('Fetched all exercises of each session'))
   },
 
   methods: {

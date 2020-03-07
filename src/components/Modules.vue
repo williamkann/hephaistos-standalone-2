@@ -44,9 +44,7 @@ export default {
     ...mapState('modules', ['modules']),
     ...mapState('sessions', ['sessions']),
     ...mapState('exercises', ['exercises']),
-    ...mapGetters('user', ['isAuthenticated']),
-    ...mapGetters('sessions', ['getSessionsByModuleId']),
-    ...mapGetters('exercises', ['getExercisesBySessionId'])
+    ...mapGetters('user', ['isAuthenticated'])
   },
   async mounted () {
     await this.fetchModules().then(() => { console.log('All modules fetched') })
@@ -54,8 +52,6 @@ export default {
   methods: {
     ...mapActions('user', ['logout']),
     ...mapActions('modules', ['fetchModules']),
-    ...mapActions('sessions', ['fetchSessionsForModule']),
-    ...mapActions('exercises', ['fetchExercisesForSession']),
 
     signOut () {
       this.logout()
