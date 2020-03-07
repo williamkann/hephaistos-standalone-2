@@ -30,7 +30,7 @@ const mutations = {
 const actions = {
   async fetchModules ({ commit }) {
     const { data } = await axios.get(api('/modules'))
-    data.forEach(d => commit('addModule', d))
+    data.forEach(d => { commit('addModule', d) })
   },
 
   async fetchModule ({ commit }, { id }) {

@@ -1,10 +1,10 @@
 <template>
   <v-container>
     <v-row>
-      <h1>{{ this.modules[0].name }}</h1>
+      <h1>{{ $route.params.moduleId }}</h1>
     </v-row>
     <v-row>
-      <div v-for="session in this.sessions" :key="session.id">
+      <div v-for="session in this.sessionsOfModule" :key="session.id">
         <router-link :to="'/session/' + session.id + '/exercises'"><h2>{{ session.name }}</h2></router-link>
         <div v-for="exercise in exercises" :key="exercise.id">
           <div v-if="session.id == exercise.sessionId">
@@ -22,8 +22,11 @@
 import { mapGetters, mapState, mapActions } from 'vuex'
 export default {
 
-  name: 'sessions',
+  name: 'module',
   data: () => ({
+    moduleSelected: [],
+    modId: '',
+    sessionsOfModule: []
   }),
   props: {
   },
@@ -34,20 +37,16 @@ export default {
     ...mapState('exercises', ['exercises']),
     ...mapGetters('user', ['isAuthenticated']),
     ...mapGetters('sessions', ['getSessionsByModuleId']),
-    ...mapGetters('exercises', ['getExercisesBySessionId'])
+    ...mapGetters('exercises', ['getExercisesBySessionId']),
+    ...mapGetters('modules', ['getModuleById']),
+    ...mapGetters('sessions', ['getSessionsByModuleId'])
   },
   async mounted () {
-    // We have to get the module that we clicked !!
-    await this.fetchModule({ id: this.$route.params.moduleId }).then(console.log('Fetched the module ' + this.$route.params.moduleId))
-
-    // We have to pass the id of the module that we clicked to fetch the sessions
-    await Promise.all(
-      this.modules.map(m => { this.fetchSessionsForModule({ moduleId: m.id }); console.log(m.id) })
-    ).then(console.log('Fetched the sessions of ' + this.$route.params.moduleId))
-
-    await Promise.all(
-      this.sessions.map(s => { this.fetchExercisesForSession({ sessionId: s.id }); console.log(s.id) })
-    ).then(console.log('Fetched the exercises of ' + this.$route.params.moduleId))
+    // Get the module ID that we clicked
+    this.modId = parseInt(this.$route.params.moduleId)
+    this.moduleSelected = this.getModuleById(this.modId)
+    console.log(this.modId)
+    this.sessionsOfModule = this.getSessionsByModuleId(this.modId)
   },
 
   methods: {

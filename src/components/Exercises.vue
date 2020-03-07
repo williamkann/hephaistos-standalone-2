@@ -1,6 +1,8 @@
 <template>
   <v-container>
-    <p>{{ this.exercises }}</p>
+    <div v-for="exercise in this.exercisesOfSession" :key="exercise.id">
+      <p>{{ exercise.title }}</p>
+    </div>
   </v-container>
 </template>
 
@@ -10,6 +12,9 @@ export default {
 
   name: 'sessions',
   data: () => ({
+    exercisesOfSession: [],
+    sessId: '',
+    result: []
   }),
   props: {
   },
@@ -24,14 +29,10 @@ export default {
   },
   async mounted () {
     // We have to pass the id of the module that we clicked to fetch the sessions
+    this.sessId = parseInt(this.$route.params.sessionId)
+    this.exercisesOfSession = this.getExercisesBySessionId(this.sessId)
 
-    await Promise.all(
-      this.exercises.map(s => { this.fetchExercisesForSession({ sessionId: s.id }); console.log('session :' + s.id) })
-    ).then(console.log('Fetched the exercises for ' + this.$route.params.sessionId))
-
-    // await Promise.all(
-    //   this.sessions.map(e => { this.fetchExerciseForSession({ sessionId: this.$route.params.sessionId, exerciseId: e.id }); console.log(e.id) })
-    // ).then(console.log('Fetched the exercises of ' + this.$route.params.sessionId))
+    this.result = this.getExerciseIdOfSession(this.sessId)
   },
 
   methods: {
@@ -44,6 +45,7 @@ export default {
     getExerciseIdOfSession (sessId) {
       const exos = this.getExercisesBySessionId(sessId)
       if (exos.length) {
+        console.log(exos)
         return exos[0].id
       } else {
         return 0

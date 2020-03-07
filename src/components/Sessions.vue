@@ -19,7 +19,7 @@
                                 <v-card class="mx-auto" width="250" outlined color="">
                                     <v-list-item three-line>
                                         <v-list-item-content>
-                                            <div class="overline mb-4">{{ exercise.title }}</div>
+                                            <div class="overline mb-4"></div>
                                         </v-list-item-content>
                                     </v-list-item>
                                 </v-card>
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState, mapActions } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 export default {
 
   name: 'sessions',
@@ -46,33 +46,18 @@ export default {
   },
 
   computed: {
-    ...mapState('modules', ['modules']),
     ...mapState('sessions', ['sessions']),
-    ...mapState('exercises', ['exercises']),
-    ...mapGetters('user', ['isAuthenticated']),
-    ...mapGetters('sessions', ['getSessionsByModuleId']),
-    ...mapGetters('exercises', ['getExercisesBySessionId'])
+    ...mapState('modules', ['modules'])
   },
   async mounted () {
+    await this.fetchModules()
     await Promise.all(
       this.modules.map(m => this.fetchSessionsForModule({ moduleId: m.id }))
-    ).then(() => { console.log('Fetched sessions for the module') })
-    await Promise.all(
-      this.sessions.map(s => this.fetchExercisesForSession({ sessionId: s.id }))
-    ).then(() => { console.log('Fetched exercises for the session') })
+    ).then(() => { console.log('2. Fetched sessions for the module') })
   },
   methods: {
     ...mapActions('sessions', ['fetchSessionsForModule']),
-    ...mapActions('exercises', ['fetchExercisesForSession']),
-
-    getExerciseIdOfSession (sessId) {
-      const exos = this.getExercisesBySessionId(sessId)
-      if (exos.length) {
-        return exos[0].id
-      } else {
-        return 0
-      }
-    }
+    ...mapActions('modules', ['fetchModules'])
   }
 }
 </script>
