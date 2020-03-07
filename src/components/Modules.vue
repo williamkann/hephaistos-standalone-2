@@ -16,9 +16,9 @@
               <h2>{{ module.name }}</h2>
             </v-col>
             <v-col cols="12" sm="2" md="2">
-              <div class="my-1">
-                <router-link :to="'module/' + module.id"> Consulter le module {{ module.id }} </router-link>
-              </div>
+            <div class="my-2">
+              <v-btn text small color="primary" @click="consult(module.id)">Consulter</v-btn>
+            </div>
             </v-col>
           </v-row>
           <Sessions :moduleId="module.id"/>
@@ -49,7 +49,7 @@ export default {
     ...mapGetters('exercises', ['getExercisesBySessionId'])
   },
   async mounted () {
-    await this.fetchModules().then(() => { console.log('1. All modules fetched ') })
+    await this.fetchModules().then(() => { console.log('All modules fetched') })
   },
   methods: {
     ...mapActions('user', ['logout']),
@@ -62,6 +62,9 @@ export default {
       if (this.isAuthenticated === false) {
         this.$router.push({ name: 'login' })
       }
+    },
+    consult: function (id) {
+      this.$router.push({ name: 'module', params: { moduleId: id } })
     }
   }
 }
