@@ -26,7 +26,6 @@ export default {
 
   name: 'sessions',
   data: () => ({
-    display: false
   }),
   props: {
     moduleId: { type: Number }
@@ -38,12 +37,11 @@ export default {
   },
   async mounted () {
     await Promise.all(
-      this.modules.map(m => this.fetchSessionsForModule({ moduleId: m.id }))
-    ).then(() => { console.log('Fetched all sessions for each module') })
+      this.modules.map(module => this.fetchSessionsForModule({ moduleId: module.id }))
+    )
   },
   methods: {
-    ...mapActions('sessions', ['fetchSessionsForModule']),
-    ...mapActions('modules', ['fetchModules'])
+    ...mapActions('sessions', ['fetchSessionsForModule'])
   }
 }
 </script>

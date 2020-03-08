@@ -65,6 +65,7 @@ const actions = {
   },
   async fetchExercisesForSession ({ commit }, { sessionId }) {
     const { data } = await axios.get(api('/session/' + sessionId + '/exercises'))
+    console.log(data)
     data.forEach(d => commit('addExercise', { sessionId, exercise: d }))
   },
 

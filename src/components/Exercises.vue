@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    {{ this.isAuthenticated }}
     <div v-for="exercise in this.exercisesOfSession" :key="exercise.id">
       <p>{{ exercise.title }}</p>
     </div>
@@ -12,9 +13,6 @@ export default {
 
   name: 'sessions',
   data: () => ({
-    exercisesOfSession: [],
-    sessId: '',
-    result: []
   }),
   props: {
   },
@@ -29,10 +27,10 @@ export default {
   },
   async mounted () {
     // We have to pass the id of the module that we clicked to fetch the sessions
-    this.sessId = parseInt(this.$route.params.sessionId)
-    this.exercisesOfSession = this.getExercisesBySessionId(this.sessId)
+    this.sessId = await parseInt(this.$route.params.sessionId)
+    this.exercisesOfSession = await this.getExercisesBySessionId(this.sessId)
 
-    this.result = this.getExerciseIdOfSession(this.sessId)
+    this.result = await this.getExerciseIdOfSession(this.sessId)
   },
 
   methods: {

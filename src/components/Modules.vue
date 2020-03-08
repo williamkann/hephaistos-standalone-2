@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="12" sm="2" md="10">
-          <h1>Liste de vos modules</h1>
+          <h1>Liste de vos modules {{ this.isAuthenticated }}</h1>
       </v-col>
       <v-col cols="12" sm="2" md="2">
         <v-btn text @click="signOut">Logout</v-btn>
@@ -19,6 +19,7 @@
             <div class="my-2">
               <v-btn text small color="primary" @click="consult(module.id)">Consulter</v-btn>
             </div>
+            <router-link :to="{ name: 'module', params: { moduleId: module.id }}">go to module {{ module.id }}</router-link>
             </v-col>
           </v-row>
           <Sessions :moduleId="module.id"/>
@@ -43,21 +44,17 @@ export default {
   computed: {
     ...mapState('modules', ['modules']),
     ...mapState('sessions', ['sessions']),
-    ...mapState('exercises', ['exercises']),
     ...mapGetters('user', ['isAuthenticated'])
   },
   async mounted () {
-    await this.fetchModules().then(() => { console.log('All modules fetched') })
+    await this.fetchModules()
   },
   methods: {
     ...mapActions('user', ['logout']),
     ...mapActions('modules', ['fetchModules']),
-
     signOut () {
       this.logout()
-      if (this.isAuthenticated === false) {
-        this.$router.push({ name: 'login' })
-      }
+      this.$router.push({ name: 'login' })
     },
     consult: function (id) {
       this.$router.push({ name: 'module', params: { moduleId: id } })

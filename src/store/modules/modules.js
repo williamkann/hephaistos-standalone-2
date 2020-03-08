@@ -21,6 +21,7 @@ const mutations = {
     const existing = state.modules.findIndex(e => e.id === module.id)
     if (existing !== -1) {
       state.modules[existing] = module
+      console.log('existed')
     } else {
       state.modules.push(module)
     }

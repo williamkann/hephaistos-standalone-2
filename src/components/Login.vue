@@ -27,15 +27,9 @@
             ></v-text-field>
           </v-col>
         </v-row>
-        <div v-if="!isAuthenticated">
-          <v-row>
-            <p>BOu</p>
-          </v-row>
-        </div>
         <div class="text-md-center">
           <v-btn text large color="primary" @click="signIn">Sign in !</v-btn>
         </div>
-        {{ this.isAuthenticated }}
       </v-container>
     </v-form>
   </v-card>
@@ -58,21 +52,16 @@ export default {
   }),
 
   computed: {
-
     ...mapState({ }),
     ...mapGetters('user', ['isAuthenticated'])
   },
 
   methods: {
     ...mapActions('user', ['login']),
-    signIn () {
-      var email = this.email
-      var password = this.password
-      this.login({ email, password })
-      if (this.isAuthenticated) {
-        this.$router.push({ name: 'modules' })
-      } else {
-      }
+    async signIn () {
+      // Get the login before pushing
+      await this.login({ email: this.email, password: this.password })
+      this.$router.push({ name: 'modules' })
     }
   }
 }
