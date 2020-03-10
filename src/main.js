@@ -7,7 +7,7 @@ import VueAxios from 'vue-axios'
 import store from './store/index'
 
 Vue.use(VueAxios, axios)
-axios.defaults.withCredentials = true // this line here !
+axios.defaults.withCredentials = true // this line here ! Axios envoie les cookies à votre server
 Vue.config.productionTip = false
 
 new Vue({

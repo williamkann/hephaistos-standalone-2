@@ -6,7 +6,7 @@
   >
     <v-form v-model="valid">
       <v-container>
-        <v-row>
+        <v-row justify-md="center">
           <v-col cols="12" md="12">
             <v-text-field
               v-model="email"
@@ -20,6 +20,7 @@
           <v-col cols="12" md="12">
             <v-text-field
               v-model="password"
+              type="password"
               :rules="passwordRules"
               :counter="20"
               label="Password"
@@ -60,8 +61,13 @@ export default {
     ...mapActions('user', ['login']),
     async signIn () {
       // Get the login before pushing
-      await this.login({ email: this.email, password: this.password })
-      this.$router.push({ name: 'modules' })
+      // Await important. Permet d'attendre que cette fonction soit finie avant de passer à la suite. Appel au server et attendre la réponse
+      try {
+        await this.login({ email: this.email, password: this.password })
+        this.$router.push({ name: 'modules' })
+      } catch (err) {
+        console.log('Ca marche pas')
+      }
     }
   }
 }

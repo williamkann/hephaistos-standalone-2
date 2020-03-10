@@ -6,28 +6,30 @@ function api (path) {
   return config.apiURL + path
 }
 
+// state : les variables
 const state = {
   modules: []
 }
 
+// getter : get un view
 const getters = {
   getModuleById: state => id => {
     return state.modules.find(_ => _.id === parseInt(id))
   }
 }
-
+// Modification de state
 const mutations = {
   addModule (state, module) {
     const existing = state.modules.findIndex(e => e.id === module.id)
     if (existing !== -1) {
       state.modules[existing] = module
-      console.log('existed')
     } else {
       state.modules.push(module)
     }
   }
 }
 
+// Modif et mute
 const actions = {
   async fetchModules ({ commit }) {
     const { data } = await axios.get(api('/modules'))

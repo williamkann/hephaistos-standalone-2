@@ -12,6 +12,7 @@ const state = {
 }
 
 const getters = {
+
   getExerciseById: state => id => {
     const found = state.exercises.find(_ => _.id === parseInt(id))
     return found
@@ -65,7 +66,6 @@ const actions = {
   },
   async fetchExercisesForSession ({ commit }, { sessionId }) {
     const { data } = await axios.get(api('/session/' + sessionId + '/exercises'))
-    console.log(data)
     data.forEach(d => commit('addExercise', { sessionId, exercise: d }))
   },
 
