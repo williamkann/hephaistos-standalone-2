@@ -8,7 +8,7 @@ Le composant 'principale recoit exercise_id et session_id. utiliser watch pour d
     <v-card>
       <v-toolbar flat color="#3366cc" dark>
         <v-toolbar-title>
-          {{ session.name }} {{ firstExerciseId }}
+          {{ session.name }} {{ this.exerciseIdSelected }}
           <v-btn text @click="signOut">Logout</v-btn>
         </v-toolbar-title>
       </v-toolbar>
@@ -18,8 +18,7 @@ Le composant 'principale recoit exercise_id et session_id. utiliser watch pour d
           <ExercisesList @exerciseSelected="onExerciseSelected"/>
         </v-col>
         <v-col cols="12" sm="2" md="10">
-          {{this.exerciseIdSelected}}
-          <DoWork :exerciseId="firstExerciseId" />
+          <DoWork :exerciseId="exerciseIdSelected" />
         </v-col>
       </v-row>
     </v-card>
@@ -35,7 +34,8 @@ export default {
   name: 'exercises',
   watch: {
     exerciseIdSelected: async function () {
-      console.log('Request the exercise')
+      console.log('Request the exercise ' + this.exerciseIdSelected + 'from session' + this.sessionId)
+      this.$router.push({ name: 'exercises', params: { sessionId: this.sessionId, exerciseId: this.exerciseIdSelected } })
     }
   },
 
@@ -44,9 +44,9 @@ export default {
     DoWork
   },
 
-  data: () => ({
-    exerciseIdSelected: 0
-  }),
+  data () {
+    return { exerciseIdSelected: parseInt(this.$route.params.exerciseId) }
+  },
 
   computed: {
     sessionId () {
@@ -59,7 +59,7 @@ export default {
       return parseInt(this.$route.params.exerciseId)
     },
     firstExercise () {
-      return this.getExerciseById(this.firstExerciseId)
+      return this.getExerciseById({ id: this.firstExerciseId })
     },
     exercises () {
       return this.getExercisesBySessionId(this.sessionId)
@@ -68,6 +68,7 @@ export default {
     ...mapState('exercises', ['exercises']),
     ...mapGetters('sessions', ['getSessionsByModuleId']),
     ...mapGetters('exercises', ['getExercisesBySessionId']),
+    ...mapGetters('exercises', ['getExerciseById']),
     ...mapGetters('sessions', ['getSessionById'])
   },
   async mounted () {
@@ -78,16 +79,13 @@ export default {
     await Promise.all(
       this.sessions.map(s => this.fetchExercisesForSession({ sessionId: s.id }))
     )
-
-    await Promise.all(
-      this.sessions.map(s => this.fetchExerciseForSession({ sessionId: s.id, exerciseId: this.firstExercise }))
-    )
+    console.log(this.sessionId + ' ' + this.exerciseIdSelected)
+    this.fetchExerciseForSession({ sessionId: this.sessionId, exerciseId: this.exerciseIdSelected })
   },
 
   methods: {
     ...mapActions('exercises', ['fetchExercisesForSession']),
     ...mapActions('exercises', ['fetchExerciseForSession']),
-    ...mapActions('exercises', ['getExerciseById']),
     ...mapActions('sessions', ['fetchSession']),
     onExerciseSelected (id) {
       console.log('ID PASSED TO PARENT :' + id)

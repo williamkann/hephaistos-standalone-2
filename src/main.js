@@ -7,8 +7,18 @@ import VueAxios from 'vue-axios'
 import store from './store/index'
 
 Vue.use(VueAxios, axios)
+
 axios.defaults.withCredentials = true // this line here ! Axios envoie les cookies à votre server
 Vue.config.productionTip = false
+
+var filter = function (text, length, clamp) {
+  clamp = clamp || '...'
+  var node = document.createElement('div')
+  node.innerHTML = text
+  var content = node.textContent
+  return content.length > length ? content.slice(0, length) + clamp : content
+}
+Vue.filter('truncate', filter)
 
 new Vue({
   store,
