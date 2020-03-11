@@ -5,8 +5,9 @@ import vuetify from './plugins/vuetify'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import store from './store/index'
+import VueDraggable from 'vuedraggable'
 
-Vue.use(VueAxios, axios)
+Vue.use(VueAxios, axios, VueDraggable)
 
 axios.defaults.withCredentials = true // this line here ! Axios envoie les cookies à votre server
 Vue.config.productionTip = false

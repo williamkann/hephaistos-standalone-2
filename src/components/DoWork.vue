@@ -10,18 +10,39 @@ Le composant 'principale recoit exercise_id et session_id. utiliser watch pour d
       color="#3366cc"
     >
     <v-row>
-      <v-col cols="12" sm="2" md="12">
-        <h1>{{ exercise.title }}</h1>
+      <v-col cols="12" sm="2" md="6">
+        <h1>{{ exercise.title }} {{this.exerciseId}}</h1>
+      </v-col>
+      <v-col cols="12" sm="2" md="6">
+        <h2>Tests</h2>
       </v-col>
     </v-row>
-    <p v-html="exercise.instructions">{{ exercise.instructions }} {{this.exerciseId}} {{sessionId}}</p>
+    <v-row>
+      <v-col cols="12" sm="2" md="6">
+        <p v-html="exercise.instructions">{{ exercise.instructions }} {{this.exerciseId}} {{sessionId}}</p>
+      </v-col>
+      <v-col cols="12" sm="2" md="6">
+        <p>Resultats</p>
+        <p>{{ exercise.tests }}</p>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" sm="2" md="1">
+        <h3>Votre Solution</h3>
+      </v-col>
+      <v-col cols="12" sm="2" md="3">
+        <v-btn class="ma-2" outlined large fab color="indigo">
+          <v-icon>mdi-play</v-icon>
+        </v-btn>
+      </v-col>
+    </v-row>
     <AceEditor></AceEditor>
     </v-alert>
   </v-container>
 </template>
 
 <style scoped>
-h1, p {
+h1, h2, h3, p {
   color: white
 }
 </style>
@@ -50,7 +71,7 @@ export default {
       return this.getExercisesBySessionId(this.sessionId)
     },
     exercise () {
-      console.log('fetch the exercise and getExerciseById performed')
+      console.log('fetch the exercise ' + this.exerciseId + ' and getExerciseById performed')
       this.fetchExerciseForSession({ sessionId: this.sessionId, exerciseId: this.exerciseId })
       return this.getExerciseById(this.exerciseId)
     },

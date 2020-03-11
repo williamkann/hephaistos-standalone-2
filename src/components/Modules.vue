@@ -34,6 +34,7 @@ div{
 <script>
 import { mapGetters, mapState, mapActions } from 'vuex'
 import Sessions from './Sessions.vue'
+
 export default {
 
   name: 'modules',
