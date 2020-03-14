@@ -8,7 +8,7 @@ Le composant 'principale recoit exercise_id et session_id. utiliser watch pour d
     <v-card>
       <v-toolbar flat color="#3366cc" dark>
         <v-toolbar-title>
-          {{ session.name }} {{ this.exerciseIdSelected }}
+          {{ session.name }}
           <v-btn text @click="signOut">Logout</v-btn>
         </v-toolbar-title>
       </v-toolbar>

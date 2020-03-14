@@ -23,7 +23,7 @@
                     <v-col cols="12" sm="2" md="12">
                         <v-card class="mx-auto" width="250" height="100" outlined color="#3366cc" hover>
                           <v-card-title>
-                            {{ exercise.title | truncate(19, '...') }}
+                            {{ exercise.title | truncate(18, '...') }}
                           </v-card-title>
                            <v-list-item-subtitle>{{ exercise.lang }}</v-list-item-subtitle>
                         </v-card>

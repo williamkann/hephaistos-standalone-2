@@ -11,7 +11,7 @@
       <!-- Create each module -->
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12">
-          <p>Drag and drop but doesn't save :/</p>
+          <div class="d-block pa-2 red white--text">Drag and drop but doesn't save :/</div>
           <div v-for="module in this.modules" :key="module.id">  <!--La clé permet de lier une balise html avec le tableau-->
             <v-row>
               <v-col cols="12" xs="6" sm="3" md="3">

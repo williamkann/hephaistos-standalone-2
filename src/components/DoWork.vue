@@ -5,13 +5,10 @@
 <!-- Les composants ne sont pas re-rendus lorsqu'on change d'exercise. Mais il faut juste changer les parametres
 Le composant 'principale recoit exercise_id et session_id. utiliser watch pour déclencher la mise à jour -->
 <!-- watch:  -->
-    <v-alert
-      outlined
-      color="#3366cc"
-    >
+    <v-alert outlined color="#3366cc">
     <v-row>
       <v-col cols="12" sm="2" md="6">
-        <h1>{{ exercise.title }} {{this.exerciseId}}</h1>
+        <h1>{{ exercise.title }}</h1>
       </v-col>
       <v-col cols="12" sm="2" md="6">
         <h2>Tests</h2>
@@ -20,42 +17,59 @@ Le composant 'principale recoit exercise_id et session_id. utiliser watch pour d
     <v-row>
       <v-col cols="12" sm="2" md="6">
         <p v-html="exercise.instructions">{{ exercise.instructions }} {{this.exerciseId}} {{sessionId}}</p>
+        <h3>Votre Solution</h3>
+        <v-btn class="ma-2" outlined large fab color="indigo" @click="attemptSend(exerciseId, sessionId, value)">
+          <v-icon>mdi-play</v-icon>
+        </v-btn>
+        <AceEditor @input="onAceEditor"></AceEditor>
       </v-col>
       <v-col cols="12" sm="2" md="6">
-        <h3>Resultats</h3>
-          <div v-if="getLastAttemptForExercise(this.exerciseId).valid">
-            <div class="d-block pa-2 green accent-4 white--text">{{this.getLastAttemptForExercise(this.exerciseId)}}</div>
-          </div>
-          <div v-if="getLastAttemptForExercise(this.exerciseId).valid == false">
-            <div class="d-block pa-2 red accent-4 white--text">{{this.getLastAttemptForExercise(this.exerciseId)}}</div>
-          </div>
-          <p>{{this.results}}</p>
-          <v-expansion-panels>
-            <v-expansion-panel
-              v-for="(item,i) in 5"
-              :key="i"
-            >
-              <v-expansion-panel-header>Item</v-expansion-panel-header>
-              <v-expansion-panel-content>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              </v-expansion-panel-content>
+          <v-card class="mx-auto" color="green" dark width="654" v-if="attempt != null && attempt.valid">
+            <v-card-title>
+              <v-icon large left>mdi-check</v-icon>
+              <span class="title font-weight-light">Results</span>
+            </v-card-title>
+            <v-card-text class="font-weight-bold">
+                <p>{{attempt.valid_tests}} tests validé(s)</p>
+                <p>{{attempt.invalid_tests}} tests invalide(s)</p>
+                <div v-if="attempt.syntax_error"><p>Syntaxe err !</p></div>
+            </v-card-text>
+          </v-card>
+          <v-card class="mx-auto" color="red" dark width="654" v-if="attempt != null && !attempt.valid">
+            <v-card-title>
+              <v-icon large left>mdi-close</v-icon>
+              <span class="title font-weight-light">Errors</span>
+            </v-card-title>
+            <v-card-text class="font-weight-bold">
+                <p>{{attempt.valid_tests}} tests validé(s)</p>
+                <p>{{attempt.invalid_tests}} tests invalide(s)</p>
+                <div v-if="attempt.syntax_error"><p>Syntaxe err !</p></div>
+            </v-card-text>
+          </v-card>
+          <v-card class="mx-auto" color="#4d4d33" dark width="654" v-if="this.results.stats != null">
+            <v-card-title>
+              <v-icon large left>mdi-alert-outline</v-icon>
+              <span class="title font-weight-light">Results</span>
+            </v-card-title>
+            <v-card-text class="font-weight-bold">
+                <p>{{this.results.stats.errors}} Errors</p>
+                <p>{{this.results.stats.skipped}} tests skipped</p>
+                <p>{{testPassed}}/{{this.results.stats.tests}} tests passed</p>
+                <p>Execution time: {{this.results.stats.time }}s</p>
+            </v-card-text>
+          </v-card>
+          <v-expansion-panels v-if="results.tests != null">
+            <v-expansion-panel v-for="test in this.results.tests" :key="test.id">
+              <v-expansion-panel-header>{{test.name}}</v-expansion-panel-header>
+              <div v-if="test.failure != null">
+                <v-expansion-panel-content v-html="test.failure.stacktrace">
+                </v-expansion-panel-content>
+                {{test.failure.message}}
+              </div>
             </v-expansion-panel>
           </v-expansion-panels>
       </v-col>
     </v-row>
-    <v-row>
-      <v-col cols="12" sm="2" md="1">
-        <h3>Votre Solution</h3>
-      </v-col>
-      <v-col cols="12" sm="2" md="3">
-        {{this.exerciseId}}
-        {{this.value}}
-        <v-btn class="ma-2" outlined large fab color="indigo" @click="attempt(exerciseId, sessionId, value)">
-          <v-icon>mdi-play</v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-    <AceEditor @input="onAceEditor"></AceEditor>
     </v-alert>
   </v-container>
 </template>
@@ -86,7 +100,7 @@ export default {
       return parseInt(this.$route.params.sessionId)
     },
     session () {
-      return this.getSessionById(this.sessionId) || { name: 'Loading ... ' }
+      return this.getSessionById(this.sessionId) || { name: 'Loading...' }
     },
     exercises () {
       return this.getExercisesBySessionId(this.sessionId)
@@ -96,6 +110,12 @@ export default {
       this.initResult()
       this.fetchExerciseForSession({ sessionId: this.sessionId, exerciseId: this.exerciseId })
       return this.getExerciseById(this.exerciseId) || { name: 'Loading...' }
+    },
+    attempt () {
+      return this.getLastAttemptForExercise(this.exerciseId) || { name: 'Loading...' }
+    },
+    testPassed () {
+      return this.results.stats.tests - this.results.stats.failures
     },
     ...mapState('sessions', ['sessions']),
     ...mapState('exercises', ['exercises']),
@@ -116,7 +136,7 @@ export default {
     ...mapActions('sessions', ['fetchSession']),
     ...mapActions('attempts', ['createAttemptForSession']),
     ...mapActions('attempts', ['fetchLastAttemptForExercise']),
-    async attempt (exoId, sessId, sol) {
+    async attemptSend (exoId, sessId, sol) {
       // Create the attempt
       console.log('Creating the attempt for exercise ' + this.exerciseId + ' and fetch performed on session ' + this.sessionId + ' with solution: ' + sol)
       await this.createAttemptForSession({ exerciseId: exoId, sessionId: this.sessionId, solution: sol })
