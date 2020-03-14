@@ -10,10 +10,11 @@
 
       <!-- Create each module -->
       <v-row>
-        <v-col cols="12" sm="2" md="12">
+        <v-col cols="12" xs="12" sm="12" md="12">
+          <p>Drag and drop but doesn't save :/</p>
           <div v-for="module in this.modules" :key="module.id">  <!--La clé permet de lier une balise html avec le tableau-->
             <v-row>
-              <v-col cols="12" sm="2" md="3">
+              <v-col cols="12" xs="6" sm="3" md="3">
                 <h2><router-link :to="{ name: 'module', params: { moduleId: module.id } }">{{ module.name }}</router-link></h2>
               </v-col>
             </v-row>

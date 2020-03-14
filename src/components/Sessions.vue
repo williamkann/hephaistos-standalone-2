@@ -1,8 +1,8 @@
 <template>
   <v-container>
     <v-row>
-      <draggable tag="div" :animation="200" ghost-class="moving-card">
-        <div v-for="session in getSessionsByModuleId(moduleId)" :key="session.id">
+      <draggable tag="div" v-model="modulesDatas" :animation="200" ghost-class="moving-card">
+        <div v-for="session in modulesDatas" :key="session.id">
           <v-row>
               <v-col cols="12" sm="2" md="12">
                   <v-card class="mx-auto" width="250" height="100" outlined color="#3366cc">
@@ -46,12 +46,21 @@ export default {
   },
   name: 'sessions',
   data: () => ({
+    modulesDatas: []
   }),
   props: {
     moduleId: { type: Number }
   },
 
   computed: {
+    sessions: {
+      get () {
+        return this.$store.state.sessions
+      },
+      set (value) {
+        this.$store.commit('updateList', value)
+      }
+    },
     ...mapState('sessions', ['sessions']),
     ...mapState('modules', ['modules']),
     ...mapGetters('sessions', ['getSessionsByModuleId']),
@@ -65,6 +74,7 @@ export default {
     await Promise.all(
       this.sessions.map(s => this.fetchExercisesForSession({ sessionId: s.id }))
     )
+    this.modulesDatas = this.getSessionsByModuleId(this.moduleId)
   },
   methods: {
     ...mapActions('sessions', ['fetchSessionsForModule']),

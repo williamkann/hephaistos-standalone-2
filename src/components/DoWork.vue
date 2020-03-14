@@ -22,8 +22,25 @@ Le composant 'principale recoit exercise_id et session_id. utiliser watch pour d
         <p v-html="exercise.instructions">{{ exercise.instructions }} {{this.exerciseId}} {{sessionId}}</p>
       </v-col>
       <v-col cols="12" sm="2" md="6">
-        <p>Resultats</p>
-        <p>{{ exercise.tests }}</p>
+        <h3>Resultats</h3>
+          <div v-if="getLastAttemptForExercise(this.exerciseId).valid">
+            <div class="d-block pa-2 green accent-4 white--text">{{this.getLastAttemptForExercise(this.exerciseId)}}</div>
+          </div>
+          <div v-if="getLastAttemptForExercise(this.exerciseId).valid == false">
+            <div class="d-block pa-2 red accent-4 white--text">{{this.getLastAttemptForExercise(this.exerciseId)}}</div>
+          </div>
+          <p>{{this.results}}</p>
+          <v-expansion-panels>
+            <v-expansion-panel
+              v-for="(item,i) in 5"
+              :key="i"
+            >
+              <v-expansion-panel-header>Item</v-expansion-panel-header>
+              <v-expansion-panel-content>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
       </v-col>
     </v-row>
     <v-row>
@@ -31,12 +48,14 @@ Le composant 'principale recoit exercise_id et session_id. utiliser watch pour d
         <h3>Votre Solution</h3>
       </v-col>
       <v-col cols="12" sm="2" md="3">
-        <v-btn class="ma-2" outlined large fab color="indigo">
+        {{this.exerciseId}}
+        {{this.value}}
+        <v-btn class="ma-2" outlined large fab color="indigo" @click="attempt(exerciseId, sessionId, value)">
           <v-icon>mdi-play</v-icon>
         </v-btn>
       </v-col>
     </v-row>
-    <AceEditor></AceEditor>
+    <AceEditor @input="onAceEditor"></AceEditor>
     </v-alert>
   </v-container>
 </template>
@@ -58,6 +77,8 @@ export default {
   },
   props: ['exerciseId'],
   data: () => ({
+    value: '',
+    results: ''
   }),
 
   computed: {
@@ -71,26 +92,46 @@ export default {
       return this.getExercisesBySessionId(this.sessionId)
     },
     exercise () {
-      console.log('fetch the exercise ' + this.exerciseId + ' and getExerciseById performed')
+      console.log('(In DoWork.vue) : Fetch the exercise ' + this.exerciseId + ' and getExerciseById performed')
+      this.initResult()
       this.fetchExerciseForSession({ sessionId: this.sessionId, exerciseId: this.exerciseId })
-      return this.getExerciseById(this.exerciseId)
+      return this.getExerciseById(this.exerciseId) || { name: 'Loading...' }
     },
     ...mapState('sessions', ['sessions']),
     ...mapState('exercises', ['exercises']),
+    ...mapState('attempts', ['lastAttemptResults']),
+    ...mapState('attempts', ['attempts']),
     ...mapGetters('sessions', ['getSessionsByModuleId']),
     ...mapGetters('exercises', ['getExercisesBySessionId']),
     ...mapGetters('sessions', ['getSessionById']),
-    ...mapGetters('exercises', ['getExerciseById'])
+    ...mapGetters('exercises', ['getExerciseById']),
+    ...mapGetters('attempts', ['getLastAttemptForExercise'])
   },
   async mounted () {
+    await this.fetchLastAttemptForExercise({ sessionId: this.sessionId, exerciseId: this.exerciseId })
   },
 
   methods: {
     ...mapActions('exercises', ['fetchExerciseForSession']),
     ...mapActions('sessions', ['fetchSession']),
+    ...mapActions('attempts', ['createAttemptForSession']),
+    ...mapActions('attempts', ['fetchLastAttemptForExercise']),
+    async attempt (exoId, sessId, sol) {
+      // Create the attempt
+      console.log('Creating the attempt for exercise ' + this.exerciseId + ' and fetch performed on session ' + this.sessionId + ' with solution: ' + sol)
+      await this.createAttemptForSession({ exerciseId: exoId, sessionId: this.sessionId, solution: sol })
+      this.results = this.lastAttemptResults
+      await this.fetchLastAttemptForExercise({ sessionId: this.sessionId, exerciseId: this.exerciseId })
+    },
+    onAceEditor (input) {
+      this.value = input
+    },
     signOut () {
       this.logout()
       this.$router.push({ name: 'login' })
+    },
+    initResult () {
+      this.results = ''
     }
   }
 }
