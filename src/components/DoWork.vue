@@ -16,58 +16,62 @@ Le composant 'principale recoit exercise_id et session_id. utiliser watch pour d
     </v-row>
     <v-row>
       <v-col cols="12" sm="2" md="6">
-        <p v-html="exercise.instructions">{{ exercise.instructions }} {{this.exerciseId}} {{sessionId}}</p>
-        <h3>Votre Solution</h3>
-        <v-btn class="ma-2" outlined large fab color="indigo" @click="attemptSend(exerciseId, sessionId, value)">
+        <p v-html="exercise.instructions">{{ exercise.instructions }}</p>
+        <h3>
+          Votre Solution
+        <v-btn class="ma-2" outlined medium color="indigo" @click="attemptSend(exerciseId, sessionId, value)">
           <v-icon>mdi-play</v-icon>
         </v-btn>
+        </h3>
         <AceEditor @input="onAceEditor"></AceEditor>
       </v-col>
       <v-col cols="12" sm="2" md="6">
-          <v-card class="mx-auto" color="green" dark width="654" v-if="attempt != null && attempt.valid">
-            <v-card-title>
-              <v-icon large left>mdi-check</v-icon>
-              <span class="title font-weight-light">Results</span>
-            </v-card-title>
-            <v-card-text class="font-weight-bold">
-                <p>{{attempt.valid_tests}} tests validé(s)</p>
-                <p>{{attempt.invalid_tests}} tests invalide(s)</p>
-                <div v-if="attempt.syntax_error"><p>Syntaxe err !</p></div>
-            </v-card-text>
-          </v-card>
-          <v-card class="mx-auto" color="red" dark width="654" v-if="attempt != null && !attempt.valid">
-            <v-card-title>
-              <v-icon large left>mdi-close</v-icon>
-              <span class="title font-weight-light">Errors</span>
-            </v-card-title>
-            <v-card-text class="font-weight-bold">
-                <p>{{attempt.valid_tests}} tests validé(s)</p>
-                <p>{{attempt.invalid_tests}} tests invalide(s)</p>
-                <div v-if="attempt.syntax_error"><p>Syntaxe err !</p></div>
-            </v-card-text>
-          </v-card>
-          <v-card class="mx-auto" color="#4d4d33" dark width="654" v-if="this.results.stats != null">
-            <v-card-title>
-              <v-icon large left>mdi-alert-outline</v-icon>
-              <span class="title font-weight-light">Results</span>
-            </v-card-title>
-            <v-card-text class="font-weight-bold">
-                <p>{{this.results.stats.errors}} Errors</p>
-                <p>{{this.results.stats.skipped}} tests skipped</p>
-                <p>{{testPassed}}/{{this.results.stats.tests}} tests passed</p>
-                <p>Execution time: {{this.results.stats.time }}s</p>
-            </v-card-text>
-          </v-card>
-          <v-expansion-panels v-if="results.tests != null">
-            <v-expansion-panel v-for="test in this.results.tests" :key="test.id">
-              <v-expansion-panel-header>{{test.name}}</v-expansion-panel-header>
-              <div v-if="test.failure != null">
-                <v-expansion-panel-content v-html="test.failure.stacktrace">
-                </v-expansion-panel-content>
-                {{test.failure.message}}
-              </div>
-            </v-expansion-panel>
-          </v-expansion-panels>
+        <div v-if="attempt != ''">
+            <v-card class="mx-auto" color="green" dark width="654" v-if="attempt != null && attempt.valid">
+              <v-card-title>
+                <v-icon medium left>mdi-check</v-icon>
+                <span class="title font-weight-light">Results</span>
+              </v-card-title>
+              <v-card-text class="font-weight-bold">
+                  <p>{{attempt.valid_tests}} tests validé(s)</p>
+                  <p>{{attempt.invalid_tests}} tests invalide(s)</p>
+                  <div v-if="attempt.syntax_error"><p>Syntaxe err !</p></div>
+              </v-card-text>
+            </v-card>
+            <v-card class="mx-auto" color="red" dark width="654" v-if="attempt != null && !attempt.valid">
+              <v-card-title>
+                <v-icon large left>mdi-close</v-icon>
+                <span class="title font-weight-light">Errors</span>
+              </v-card-title>
+              <v-card-text class="font-weight-bold">
+                  <p>{{attempt.valid_tests}} tests validé(s)</p>
+                  <p>{{attempt.invalid_tests}} tests invalide(s)</p>
+                  <div v-if="attempt.syntax_error"><p>Syntaxe err !</p></div>
+              </v-card-text>
+            </v-card>
+        </div>
+        <v-card class="mx-auto" color="#4d4d33" dark width="654" v-if="this.results.stats != null">
+          <v-card-title>
+            <v-icon large left>mdi-alert-outline</v-icon>
+            <span class="title font-weight-light">Results</span>
+          </v-card-title>
+          <v-card-text class="font-weight-bold">
+              <p>{{this.results.stats.errors}} Errors</p>
+              <p>{{this.results.stats.skipped}} tests skipped</p>
+              <p>{{testPassed}}/{{this.results.stats.tests}} tests passed</p>
+              <p>Execution time: {{this.results.stats.time }}s</p>
+          </v-card-text>
+        </v-card>
+        <v-expansion-panels v-if="results.tests != null">
+          <v-expansion-panel v-for="test in this.results.tests" :key="test.id">
+            <v-expansion-panel-header>{{test.name}}</v-expansion-panel-header>
+            <div v-if="test.failure != null">
+              <v-expansion-panel-content v-html="test.failure.stacktrace">
+              </v-expansion-panel-content>
+              {{test.failure.message}}
+            </div>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-col>
     </v-row>
     </v-alert>
@@ -112,9 +116,10 @@ export default {
       return this.getExerciseById(this.exerciseId) || { name: 'Loading...' }
     },
     attempt () {
-      return this.getLastAttemptForExercise(this.exerciseId) || { name: 'Loading...' }
+      return this.getLastAttemptForExercise(this.exerciseId) || ''
     },
     testPassed () {
+      console.log('Number of tests: ' + this.results.stats.tests + 'Failures: ' + this.results.stats.failures)
       return this.results.stats.tests - this.results.stats.failures
     },
     ...mapState('sessions', ['sessions']),

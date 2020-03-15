@@ -3,7 +3,10 @@
      <v-card>
     <v-toolbar flat color="#3366cc" dark>
       <v-toolbar-title>
-         {{ module.name }}
+        <v-btn class="ma-2" outlined medium color="white" @click="sendPrevious()">
+          <v-icon medium center>mdi-page-previous</v-icon>
+        </v-btn>
+        {{ module.name }}
         <v-btn text @click="signOut">Logout</v-btn>
       </v-toolbar-title>
     </v-toolbar>
@@ -102,6 +105,9 @@ export default {
       } else {
         return 0
       }
+    },
+    sendPrevious () {
+      this.$router.push({ name: 'modules' })
     }
   }
 }

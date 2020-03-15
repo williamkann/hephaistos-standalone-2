@@ -3,16 +3,19 @@
 
 <!-- La vue étudiante, url dans quel on est session/3/exercise/15 -->
 <!-- Les composants ne sont pas re-rendus lorsqu'on change d'exercise. Mais il faut juste changer les parametres
-Le composant 'principale recoit exercise_id et session_id. utiliser watch pour déclencher la mise à jour -->
+Le composant 'principal' recoit exercise_id et session_id. utiliser watch pour déclencher la mise à jour -->
 <!-- watch:  -->
     <v-card>
       <v-toolbar flat color="#3366cc" dark>
         <v-toolbar-title>
+          <v-btn class="ma-2" outlined medium color="white" @click="sendPrevious()">
+            <v-icon medium center>mdi-page-previous</v-icon>
+          </v-btn>
           {{ session.name }}
           <v-btn text @click="signOut">Logout</v-btn>
         </v-toolbar-title>
       </v-toolbar>
-      <!-- Col with exercisesList left and DoWork Right -->
+      <!-- Col with exercisesList on the left and DoWork on the right -->
       <v-row>
         <v-col cols="12" sm="2" md="2">
           <ExercisesList @exerciseSelected="onExerciseSelected"/>
@@ -86,6 +89,7 @@ export default {
     ...mapActions('exercises', ['fetchExercisesForSession']),
     ...mapActions('exercises', ['fetchExerciseForSession']),
     ...mapActions('sessions', ['fetchSession']),
+    ...mapActions('user', ['logout']),
     onExerciseSelected (id) {
       console.log('ID PASSED TO PARENT: ' + id)
       this.exerciseIdSelected = id
@@ -93,6 +97,9 @@ export default {
     signOut () {
       this.logout()
       this.$router.push({ name: 'login' })
+    },
+    sendPrevious () {
+      this.$router.push({ name: 'module', params: { moduleId: 1 } })
     }
   }
 }
